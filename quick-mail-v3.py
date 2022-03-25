@@ -8,30 +8,31 @@ attachments to make the mail more interesting and structured. No HTML or
 anything fancy, but it should look decent in your mail client.
 
 Written targeting Python 2, sometime in 2008. <barney@anchor.net.au>
+Updated to Python 3 in 2022. <barneydesmond@gmail.com>
 """
 
 import smtplib
 import datetime
-from optparse import OptionParser
+from argparse import ArgumentParser
 
 from email.mime.application import MIMEApplication
 from email.mime.image import MIMEImage
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEText import MIMEText
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
 
-parser = OptionParser()
-parser.add_option("-n", type="int", dest="howmany", default=1, help="Specify how many messages to send")
-parser.add_option("--from", dest="fromaddr", default='barney@anchor.net.au', help="What email address should the message appear to come from")
-parser.add_option("--to", dest="toaddr", default='johnny@example.com', help="Who should the email be addressed to")
-parser.add_option("--host", "--server", dest="server", default='mail.example.com', help="Specify the SMTP server to connect to")
-parser.add_option("-p", "--port", type="int", dest="port", default=25, help="What port should the SMTP server be contacted on")
-(options, args) = parser.parse_args()
+parser = ArgumentParser()
+parser.add_argument("-n", type=int, dest="howmany", default=1, help="Specify how many messages to send")
+parser.add_argument("--from", dest="fromaddr", default='barney@anchor.net.au', help="What email address should the message appear to come from")
+parser.add_argument("--to", dest="toaddr", default='johnny@example.com', help="Who should the email be addressed to")
+parser.add_argument("--host", "--server", dest="server", default='localhost', help="Specify the SMTP server to connect to")
+parser.add_argument("-p", "--port", type=int, dest="port", default=25, help="What port should the SMTP server be contacted on")
+args = parser.parse_args()
 
 TIMESTAMP = datetime.datetime.now().ctime()
-FROM        = options.fromaddr
-TO          = options.toaddr
-SMTP_SERVER = options.server
-SMTP_PORT   = options.port
+FROM        = args.fromaddr
+TO          = args.toaddr
+SMTP_SERVER = args.server
+SMTP_PORT   = args.port
 
 
 # setup the message
@@ -55,19 +56,19 @@ Python documentation about the SMTP libraries, used in this script.
 
 
 The smtplib module defines an SMTP client session object that can be used to
-send mail to any Internet machine with an SMTP or ESMTP listener daemon. For 
-details of SMTP and ESMTP operation, consult RFC 821 (Simple Mail Transfer 
+send mail to any Internet machine with an SMTP or ESMTP listener daemon. For
+details of SMTP and ESMTP operation, consult RFC 821 (Simple Mail Transfer
 Protocol) and RFC 1869 (SMTP Service Extensions).
 
 class SMTP(     [host[, port[, local_hostname]]])
-    A SMTP instance encapsulates an SMTP connection. It has methods that 
-support a full repertoire of SMTP and ESMTP operations. If the optional host 
-and port parameters are given, the SMTP connect() method is called with those 
-parameters during initialization. An SMTPConnectError is raised if the 
+    A SMTP instance encapsulates an SMTP connection. It has methods that
+support a full repertoire of SMTP and ESMTP operations. If the optional host
+and port parameters are given, the SMTP connect() method is called with those
+parameters during initialization. An SMTPConnectError is raised if the
 specified host doesn't respond correctly.
 
-    For normal use, you should only require the initialization/connect, 
-sendmail(), and quit() methods. An example is included below. 
+    For normal use, you should only require the initialization/connect,
+sendmail(), and quit() methods. An example is included below.
 
 A nice selection of exceptions is defined as well:
 
@@ -99,6 +100,6 @@ mail.attach(img)
 mailer = smtplib.SMTP()
 mailer.connect(SMTP_SERVER, SMTP_PORT) # localhost:25 is the default
 for i in range(options.howmany):
-	mailer.sendmail(FROM, TO, mail.as_string())
-	print i
+    mailer.sendmail(FROM, TO, mail.as_string())
+    print(i)
 mailer.close()
